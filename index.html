@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <!--
+    viewport-fit=cover → usa toda la pantalla en iPhone con notch/Dynamic Island
+    interactive-widget=resizes-content → en Chrome Android el teclado no rompe el layout
+  -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, interactive-widget=resizes-content" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="theme-color" content="#0d0f14" />
+  <title>StreamView Mobile</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- ══ SETUP PANEL (visible solo la primera vez) ══ -->
+  <div class="setup-overlay" id="setup-overlay">
+    <div class="setup-card">
+      <div class="setup-brand">
+        <span class="brand-dot"></span>
+        <span class="brand-name">StreamView</span>
+      </div>
+      <p class="setup-sub">Configura tu sesión</p>
+
+      <div class="field">
+        <label for="stream-url">URL del stream (OK.RU)</label>
+        <input
+          type="url"
+          id="stream-url"
+          inputmode="url"
+          placeholder="https://ok.ru/live/…"
+          autocomplete="off"
+          spellcheck="false"
+        />
+      </div>
+
+      <div class="field">
+        <label for="twitch-channel">Canal de Twitch</label>
+        <input
+          type="text"
+          id="twitch-channel"
+          inputmode="text"
+          placeholder="nombre_del_canal"
+          autocomplete="off"
+          spellcheck="false"
+          autocapitalize="none"
+        />
+      </div>
+
+      <button class="btn-go" id="btn-go" onclick="launchViewer()">
+        ▶ &nbsp;Empezar
+      </button>
+    </div>
+  </div>
+
+  <!-- ══ VIEWER (oculto hasta cargar) ══ -->
+  <div class="viewer hidden" id="viewer">
+
+    <!-- Barra superior mínima con botón de reconfigurar -->
+    <div class="topbar" id="topbar">
+      <span class="topbar-channel" id="topbar-channel"></span>
+      <button class="btn-settings" id="btn-settings" onclick="openSetup()" title="Cambiar stream">
+        ⚙
+      </button>
+    </div>
+
+    <!-- VIDEO: ratio 16/9 fijo, nunca se corta -->
+    <div class="video-shell" id="video-shell">
+      <div class="video-ratio">
+        <iframe
+          id="stream-frame"
+          src=""
+          allowfullscreen
+          allow="autoplay; fullscreen"
+          frameborder="0"
+          scrolling="no"
+        ></iframe>
+      </div>
+    </div>
+
+    <!-- CHAT: ocupa el resto de la pantalla, scroll interno -->
+    <div class="chat-shell" id="chat-shell">
+      <div class="chat-topbar">
+        <span class="live-dot"></span>
+        <span class="chat-label" id="chat-label">CHAT</span>
+      </div>
+      <iframe
+        id="chat-frame"
+        src=""
+        frameborder="0"
+        scrolling="yes"
+      ></iframe>
+    </div>
+
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

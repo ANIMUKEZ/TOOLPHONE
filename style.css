@@ -1,0 +1,383 @@
+/* ═══════════════════════════════════════════
+   TOKENS
+═══════════════════════════════════════════ */
+:root {
+  --bg:        #0d0f14;
+  --surface:   #161922;
+  --border:    #252a36;
+  --accent:    #7c3aed;
+  --accent2:   #a855f7;
+  --live:      #ef4444;
+  --text:      #e2e8f0;
+  --muted:     #64748b;
+  --radius:    12px;
+  --topbar-h:  44px;
+  --chat-top:  36px;   /* altura de la barra del chat */
+
+  /* Safe areas para iPhone con notch / Dynamic Island */
+  --sat: env(safe-area-inset-top,    0px);
+  --sar: env(safe-area-inset-right,  0px);
+  --sab: env(safe-area-inset-bottom, 0px);
+  --sal: env(safe-area-inset-left,   0px);
+}
+
+/* ═══════════════════════════════════════════
+   RESET BASE
+═══════════════════════════════════════════ */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html {
+  /* Evita el rebote de Safari y el zoom al hacer focus en inputs */
+  height: 100%;
+  overflow: hidden;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  height: 100%;
+  background: var(--bg);
+  color: var(--text);
+  font-family: -apple-system, 'SF Pro Text', 'Helvetica Neue', system-ui, sans-serif;
+  font-size: 15px;
+  overflow: hidden;
+  /* Evitar el scroll del body en iOS */
+  position: fixed;
+  width: 100%;
+}
+
+/* ═══════════════════════════════════════════
+   SETUP OVERLAY
+═══════════════════════════════════════════ */
+.setup-overlay {
+  position: fixed;
+  inset: 0;
+  background: var(--bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+  padding: calc(var(--sat) + 20px) calc(var(--sar) + 20px) calc(var(--sab) + 20px) calc(var(--sal) + 20px);
+}
+
+.setup-card {
+  width: 100%;
+  max-width: 420px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 32px 24px 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.setup-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.brand-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--accent2);
+  box-shadow: 0 0 12px var(--accent2);
+  flex-shrink: 0;
+  animation: blink 2s ease-in-out infinite;
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%       { opacity: 0.5; transform: scale(0.8); }
+}
+
+.brand-name {
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text);
+}
+
+.setup-sub {
+  font-size: 13px;
+  color: var(--muted);
+  margin-top: -12px;
+}
+
+/* ── Fields ── */
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.field label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--muted);
+}
+
+.field input {
+  background: var(--bg);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text);
+  font-size: 16px; /* ≥16px evita el zoom automático en iOS Safari */
+  font-family: inherit;
+  padding: 13px 14px;
+  outline: none;
+  width: 100%;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  /* Evitar que iOS añada estilos propios */
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.field input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.22);
+}
+
+.field input::placeholder { color: var(--muted); }
+.field input.error        { border-color: var(--live); box-shadow: 0 0 0 3px rgba(239,68,68,0.18); }
+
+/* ── Go button ── */
+.btn-go {
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius);
+  font-family: inherit;
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  padding: 15px;
+  cursor: pointer;
+  width: 100%;
+  transition: background 0.2s, transform 0.12s;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.btn-go:active { background: var(--accent2); transform: scale(0.97); }
+
+/* ═══════════════════════════════════════════
+   VIEWER
+═══════════════════════════════════════════ */
+.viewer {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  /* Respeta el safe area de iPhone */
+  padding-top:    var(--sat);
+  padding-left:   var(--sal);
+  padding-right:  var(--sar);
+  padding-bottom: var(--sab);
+  background: var(--bg);
+}
+
+/* ── Topbar ── */
+.topbar {
+  height: var(--topbar-h);
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 14px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+}
+
+.topbar-channel {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1;
+}
+
+.btn-settings {
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--muted);
+  font-size: 16px;
+  width: 34px;
+  height: 34px;
+  cursor: pointer;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: border-color 0.2s, color 0.2s;
+}
+
+.btn-settings:active { border-color: var(--accent); color: var(--accent2); }
+
+/* ── Video shell ──
+   El vídeo ocupa exactamente el ancho de pantalla en ratio 16:9,
+   sin recortar nada y sin dejar espacio muerto. */
+.video-shell {
+  flex-shrink: 0;
+  width: 100%;
+  background: #000;
+}
+
+.video-ratio {
+  position: relative;
+  width: 100%;
+  padding-bottom: 56.25%; /* 16:9 */
+  height: 0;
+  overflow: hidden;
+}
+
+.video-ratio iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: none;
+  display: block;
+}
+
+/* ── Chat shell ──
+   Ocupa todo el espacio restante con scroll solo dentro del iframe */
+.chat-shell {
+  flex: 1;
+  min-height: 0;       /* clave: permite que flex haga shrink correctamente */
+  display: flex;
+  flex-direction: column;
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+  overflow: hidden;
+}
+
+.chat-topbar {
+  height: var(--chat-top);
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 14px;
+  background: var(--bg);
+  border-bottom: 1px solid var(--border);
+}
+
+.live-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--live);
+  flex-shrink: 0;
+  animation: blink 1.4s ease-in-out infinite;
+}
+
+.chat-label {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  color: var(--muted);
+  text-transform: uppercase;
+}
+
+.chat-shell iframe {
+  flex: 1;
+  width: 100%;
+  min-height: 0;
+  border: none;
+  display: block;
+  /* Permite scroll táctil dentro del iframe en iOS */
+  -webkit-overflow-scrolling: touch;
+}
+
+/* ═══════════════════════════════════════════
+   UTILIDADES
+═══════════════════════════════════════════ */
+.hidden { display: none !important; }
+
+/* ═══════════════════════════════════════════
+   LANDSCAPE — en horizontal el chat va al lado
+═══════════════════════════════════════════ */
+@media (orientation: landscape) and (max-height: 500px) {
+  .viewer {
+    flex-direction: row;
+    flex-wrap: nowrap;
+  }
+
+  .topbar {
+    display: none; /* en landscape prescindimos del topbar para ganar espacio */
+  }
+
+  .video-shell {
+    flex: 1;
+    height: 100%;
+    display: flex;
+    align-items: stretch;
+  }
+
+  .video-ratio {
+    flex: 1;
+    height: 100%;
+    padding-bottom: 0; /* anulamos el truco de padding */
+  }
+
+  .video-ratio iframe {
+    position: static;
+    width: 100%;
+    height: 100%;
+  }
+
+  .chat-shell {
+    width: 280px;
+    flex: none;
+    height: 100%;
+    border-top: none;
+    border-left: 1px solid var(--border);
+  }
+}
+
+/* ═══════════════════════════════════════════
+   DESKTOP (si alguien lo abre en PC igual funciona)
+═══════════════════════════════════════════ */
+@media (min-width: 900px) {
+  .setup-card { padding: 40px 32px 36px; }
+
+  .viewer { flex-direction: row; }
+
+  .topbar {
+    display: none; /* en desktop no es necesario */
+  }
+
+  .video-shell {
+    flex: 1;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    background: #000;
+  }
+
+  .video-ratio {
+    width: 100%;
+    padding-bottom: 56.25%;
+    flex: none;
+  }
+
+  .chat-shell {
+    width: 340px;
+    flex: none;
+    height: 100%;
+    border-top: none;
+    border-left: 1px solid var(--border);
+  }
+}

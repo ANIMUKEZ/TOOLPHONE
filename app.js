@@ -7,30 +7,47 @@ const LS_CHANNEL = 'sv_channel';
 
 // ── Parsers ────────────────────────────────
 
-function buildOkruEmbed(raw) {
+/**
+ * Detecta la plataforma y construye la URL de embed.
+ * Soporta OK.RU y Odysee.
+ */
+function buildStreamEmbedUrl(raw) {
   raw = raw.trim();
 
-  if (raw.includes('ok.ru/videoembed/')) {
+  // ── ODYSEE ──────────────────────────────
+  // https://odysee.com/@Canal:x/titulo:y
+  // →  https://odysee.com/%24/embed/%40Canal%3Ax%2Ftitulo%3Ay  (fully encoded)
+  if (raw.includes('odysee.com')) {
+    if (raw.includes('/$/embed/') || raw.includes('/%24/embed/')) return raw;
     try {
       const u = new URL(raw);
-      u.searchParams.set('autoplay', '1');
-      return u.toString();
+      const encodedPath = encodeURIComponent(u.pathname.replace(/^\//, ''));
+      return `https://odysee.com/%24/embed/${encodedPath}`;
     } catch (_) { return null; }
   }
 
-  const m = raw.match(/ok\.ru\/(?:live|video|videoembed)\/(\d+)/i);
-  if (m) return `https://ok.ru/videoembed/${m[1]}?autoplay=1`;
-
-  if (/^\d+$/.test(raw)) return `https://ok.ru/videoembed/${raw}?autoplay=1`;
-
-  try {
-    const u = new URL(raw);
-    if (u.hostname.includes('ok.ru')) {
+  // ── OK.RU ────────────────────────────────
+  if (raw.includes('ok.ru')) {
+    if (raw.includes('ok.ru/videoembed/')) {
+      try {
+        const u = new URL(raw);
+        u.searchParams.set('autoplay', '1');
+        return u.toString();
+      } catch (_) { return null; }
+    }
+    const m = raw.match(/ok\.ru\/(?:live|video|videoembed)\/(\d+)/i);
+    if (m) return `https://ok.ru/videoembed/${m[1]}?autoplay=1`;
+    try {
+      const u = new URL(raw);
       const parts = u.pathname.split('/').filter(Boolean);
       const id = parts[parts.length - 1];
       if (id && /\d/.test(id)) return `https://ok.ru/videoembed/${id}?autoplay=1`;
-    }
-  } catch (_) {}
+    } catch (_) {}
+    return null;
+  }
+
+  // Solo ID numérico → OK.RU
+  if (/^\d+$/.test(raw)) return `https://ok.ru/videoembed/${raw}?autoplay=1`;
 
   return null;
 }
@@ -82,11 +99,11 @@ function launchViewer() {
     return;
   }
 
-  // — Stream OK.RU —
+  // — Stream OK.RU / Odysee —
   if (streamVal) {
-    const embedUrl = buildOkruEmbed(streamVal);
+    const embedUrl = buildStreamEmbedUrl(streamVal);
     if (!embedUrl) {
-      setError(streamInput, 'URL no reconocida. Ej: https://ok.ru/live/123456789');
+      setError(streamInput, 'URL no reconocida. Soportado: OK.RU y Odysee.');
       ok = false;
     } else {
       clearError(streamInput);

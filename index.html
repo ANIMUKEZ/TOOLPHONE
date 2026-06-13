@@ -11,7 +11,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="theme-color" content="#0d0f14" />
-  <title>ANIMUKEZ MOBILE</title>
+  <title>StreamView Mobile</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
@@ -21,14 +21,14 @@
     <div class="setup-card">
       <div class="setup-brand">
         <span class="brand-dot"></span>
-        <span class="brand-name">ANIMUKEZ MOBILE</span>
+        <span class="brand-name">StreamView</span>
       </div>
       <p class="setup-sub">Configura tu sesión</p>
 
       <div class="field">
-        <label for="stream-url">URL del stream (OK.RU o ODYSEE)</label>
+        <label for="stream-url">URL del stream (OK.RU)</label>
         <input
-          type="text"
+          type="url"
           id="stream-url"
           inputmode="url"
           placeholder="https://ok.ru/live/…"
@@ -74,8 +74,7 @@
           id="stream-frame"
           src=""
           allowfullscreen
-          allow="autoplay; fullscreen; encrypted-media; picture-in-picture"
-          sandbox="allow-scripts allow-same-origin allow-popups allow-presentation allow-forms"
+          allow="autoplay; fullscreen"
           frameborder="0"
           scrolling="no"
         ></iframe>
